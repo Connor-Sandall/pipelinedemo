@@ -1,0 +1,37 @@
+name: Mirror to DoD GitLab (web.git.mil)
+
+on:
+  push:
+    branches:
+      - '**'  # Trigger on pushes to all branches
+  tags:
+    - '**'  # Trigger on all tag creations
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout commercial repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required to fetch all history and branches
+
+      - name: Mirror to web.git.mil
+        env:
+          # Construct the authenticated clone URL using the GitLab token
+          # Replace 'your-group/your-project' with your actual web.git.mil path
+          DOD_GITLAB_URL: "https://oauth2:${{ secrets.DOD_GITLAB_TOKEN }}@web.git.mil/your-group/your-project.git"
+        run: |
+          # Configure Git to trust the workspace and set up push credentials
+          git config --global user.email "connor.sandall@us.af.mil"
+          git config --global user.name "GitHub Sync Bot"
+          
+          # Add the web.git.mil destination as a remote target
+          git remote add target "$DOD_GITLAB_URL"
+          
+          # Push all branches and tags to the target DoD instance
+          echo "Pushing all branches to web.git.mil..."
+          git push --prune target "+refs/remotes/origin/*:refs/heads/*"
+          
+          echo "Pushing all tags to web.git.mil..."
+          git push --tags --force target
