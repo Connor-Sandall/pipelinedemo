@@ -19,7 +19,7 @@ jobs:
 
       - name: Mirror to web.git.mil
         env:
-          DOD_GITLAB_URL: "https://oauth2:${{ secrets.DOD_GITLAB_TOKEN }}@web.git.mil/connor.sandall/pipelinedemomil"
+          DOD_GITLAB_URL: "https://connor.sandall:${{ secrets.DOD_GITLAB_TOKEN }}@web.git.mil/connor.sandall/pipelinedemomil"
         run: |
           # Configure Git to trust the workspace and set up push credentials
           git config --global user.email "connor.sandall@us.af.mil"
